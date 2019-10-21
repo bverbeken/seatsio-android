@@ -5,17 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.*;
+
+import io.seats.function.BiConsumer;
+import io.seats.function.Consumer;
+import io.seats.function.Function;
 
 import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
 
 public class SeatingChartConfig {
 
@@ -282,9 +278,11 @@ public class SeatingChartConfig {
     }
 
     public SeatingChartConfig setSelectedObjects(String... selectedObjects) {
-        this.selectedObjects = stream(selectedObjects)
-                .map(SelectedObject::new)
-                .collect(toList());
+        List<SelectedObject> result = new ArrayList<>(selectedObjects.length);
+        for (String s : selectedObjects) {
+            result.add(new SelectedObject(s));
+        }
+        this.selectedObjects = result;
         return this;
     }
 

@@ -1,6 +1,6 @@
 package io.seats;
 
-import java.util.function.Consumer;
+import io.seats.function.Consumer;
 
 public class AsyncRequest {
 

@@ -53,7 +53,7 @@ public class SeatingChartJavascriptInterface extends SeatsioJavascriptInterface 
         Type listType = new TypeToken<List<SeatsioObject>>() {
         }.getType();
         config.onBestAvailableSelected.accept(
-                GSON.fromJson(objects, listType),
+                GSON.<List<SeatsioObject>>fromJson(objects, listType),
                 GSON.fromJson(nextToEachOther, Boolean.class)
         );
     }
@@ -66,32 +66,32 @@ public class SeatingChartJavascriptInterface extends SeatsioJavascriptInterface 
     @JavascriptInterface
     public void onHoldSucceeded(String objects, String ticketTypes) {
         config.onHoldSucceeded.accept(
-                GSON.fromJson(objects, OBJECT_LIST_TYPE),
-                GSON.fromJson(ticketTypes, TICKET_TYPE_LIST_TYPE)
+                GSON.<List<SeatsioObject>>fromJson(objects, OBJECT_LIST_TYPE),
+                GSON.<List<TicketType>>fromJson(ticketTypes, TICKET_TYPE_LIST_TYPE)
         );
     }
 
     @JavascriptInterface
     public void onHoldFailed(String objects, String ticketTypes) {
         config.onHoldFailed.accept(
-                GSON.fromJson(objects, OBJECT_LIST_TYPE),
-                GSON.fromJson(ticketTypes, TICKET_TYPE_LIST_TYPE)
+                GSON.<List<SeatsioObject>>fromJson(objects, OBJECT_LIST_TYPE),
+                GSON.<List<TicketType>>fromJson(ticketTypes, TICKET_TYPE_LIST_TYPE)
         );
     }
 
     @JavascriptInterface
     public void onReleaseHoldSucceeded(String objects, String ticketTypes) {
         config.onReleaseHoldSucceeded.accept(
-                GSON.fromJson(objects, OBJECT_LIST_TYPE),
-                GSON.fromJson(ticketTypes, TICKET_TYPE_LIST_TYPE)
+                GSON.<List<SeatsioObject>>fromJson(objects, OBJECT_LIST_TYPE),
+                GSON.<List<TicketType>>fromJson(ticketTypes, TICKET_TYPE_LIST_TYPE)
         );
     }
 
     @JavascriptInterface
     public void onReleaseHoldFailed(String objects, String ticketTypes) {
         config.onReleaseHoldFailed.accept(
-                GSON.fromJson(objects, OBJECT_LIST_TYPE),
-                GSON.fromJson(ticketTypes, TICKET_TYPE_LIST_TYPE)
+                GSON.<List<SeatsioObject>>fromJson(objects, OBJECT_LIST_TYPE),
+                GSON.<List<TicketType>>fromJson(ticketTypes, TICKET_TYPE_LIST_TYPE)
         );
     }
 
@@ -104,7 +104,7 @@ public class SeatingChartJavascriptInterface extends SeatsioJavascriptInterface 
     public void onSelectionInvalid(String violations) {
         Type listType = new TypeToken<List<SelectionValidatorType>>() {
         }.getType();
-        config.onSelectionInvalid.accept(GSON.fromJson(violations, listType));
+        config.onSelectionInvalid.accept(GSON.<List<SelectionValidatorType>>fromJson(violations, listType));
     }
 
     @JavascriptInterface
@@ -114,7 +114,12 @@ public class SeatingChartJavascriptInterface extends SeatsioJavascriptInterface 
 
     @JavascriptInterface
     public void onChartRendered() {
-        seatsioWebView.post(() -> config.onChartRendered.accept((SeatingChartView) seatsioWebView));
+        seatsioWebView.post(new Runnable() {
+            @Override
+            public void run() {
+                config.onChartRendered.accept((SeatingChartView) seatsioWebView);
+            }
+        });
     }
 
     @JavascriptInterface

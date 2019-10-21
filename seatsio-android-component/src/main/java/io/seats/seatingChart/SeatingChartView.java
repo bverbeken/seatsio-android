@@ -3,13 +3,14 @@ package io.seats.seatingChart;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.webkit.ValueCallback;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.seats.SeatsioWebView;
+import io.seats.function.Consumer;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class SeatingChartView extends SeatsioWebView {
 
@@ -35,8 +36,13 @@ public class SeatingChartView extends SeatsioWebView {
         this.config = config;
     }
 
-    public void getHoldToken(Consumer<String> callback) {
-        evaluateJavascript("chart.holdToken", callback::accept);
+    public void getHoldToken(final Consumer<String> callback) {
+        evaluateJavascript("chart.holdToken", new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+                callback.accept(value);
+            }
+        });
     }
 
     public void zoomToSelectedObjects() {
@@ -55,41 +61,55 @@ public class SeatingChartView extends SeatsioWebView {
         evaluateJavascript("chart.deselectObjects(" + new Gson().toJson(objects) + ")", null);
     }
 
-    public void listSelectedObjects(Consumer<List<SeatsioObject>> callback) {
+    public void listSelectedObjects(final Consumer<List<SeatsioObject>> callback) {
         asyncRequests.doRequest(
                 "listSelectedObjects",
-                objects -> {
-                    Type listType = new TypeToken<List<SeatsioObject>>() {
-                    }.getType();
-                    callback.accept(new Gson().fromJson(objects, listType));
+                new Consumer<String>() {
+                    @Override
+                    public void accept(String objects) {
+                            Type listType = new TypeToken<List<SeatsioObject>>() {}.getType();
+                            callback.accept(new Gson().<List<SeatsioObject>>fromJson(objects, listType));
+                    }
                 }
         );
     }
 
-    public void listCategories(Consumer<List<Category>> callback) {
+    public void listCategories(final Consumer<List<Category>> callback) {
         asyncRequests.doRequest(
                 "listCategories",
-                categories -> {
-                    Type listType = new TypeToken<List<Category>>() {
-                    }.getType();
-                    callback.accept(new Gson().fromJson(categories, listType));
+                new Consumer<String>() {
+                    @Override
+                    public void accept(String categories) {
+                        Type listType = new TypeToken<List<Category>>() {}.getType();
+                        callback.accept(new Gson().<List<Category>>fromJson(categories, listType));
+                    }
                 }
         );
     }
 
-    public void findObject(String label, Consumer<SeatsioObject> successCallback, Runnable errorCallback) {
+    public void findObject(String label, final Consumer<SeatsioObject> successCallback, Runnable errorCallback) {
         asyncRequests.doRequest(
                 "findObject",
                 label,
-                object -> successCallback.accept(new Gson().fromJson(object, SeatsioObject.class)),
+                new Consumer<String>() {
+                    @Override
+                    public void accept(String object) {
+                        successCallback.accept(new Gson().fromJson(object, SeatsioObject.class));
+                    }
+                },
                 errorCallback
         );
     }
 
-    public void clearSelection(Runnable successCallback, Runnable errorCallback) {
+    public void clearSelection(final Runnable successCallback, Runnable errorCallback) {
         asyncRequests.doRequest(
                 "clearSelection",
-                object -> successCallback.run(),
+                new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
+                        successCallback.run();
+                    }
+                },
                 errorCallback
         );
     }
