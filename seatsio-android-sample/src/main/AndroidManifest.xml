@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="test">
 
     <application
@@ -30,6 +31,8 @@
             </intent-filter>
         </activity>
     </application>
+
+    <uses-sdk tools:overrideLibrary="io.seats" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 
